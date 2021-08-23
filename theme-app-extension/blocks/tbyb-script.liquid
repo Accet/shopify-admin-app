@@ -1,0 +1,179 @@
+<script src="https://storage.googleapis.com/origin-static.blackcart.co/js/blackcart-shopify-0.1.js" defer></script>
+
+<style type="text/css">
+  .tooltiptext {
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    margin-left: -60px;
+    transition: opacity 0.3s;
+  }
+
+  .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+  }
+</style>
+<script type="text/javascript">
+  localStorage.setItem('tbyb', JSON.stringify({
+    primaryColor: "{{ block.settings.primary_color }}",
+    secondaryColor: "{{ block.settings.secondary_color }}",
+    variant: "{{ block.settings.variant }}",
+    tbyb_btn_insert_position: "{{ block.settings.tbyb_btn_insert_position }}",
+    tbyb_btn_insert_container: "{{ block.settings.tbyb_btn_insert_container }}",
+    tbyb_btn_style: "{{ block.settings.tbyb_btn_style }}",
+    tbyb_btn_text: "{{ block.settings.tbyb_btn_text }}" || "Try Before You Buy"
+  }))
+  if ("{{ block.settings.devMode }}" === 'true') {
+    document.addEventListener('mouseover', function (event) {
+      let x = event.clientX;
+      let y = event.clientY;
+      let el = document.elementFromPoint(x, y)
+      el.style.border = '1px solid red';
+      const oldPosition = window.getComputedStyle(el, 'position')
+      el.style.position = 'relative';
+      const caption = document.createElement('p');
+      const classes = el.getAttribute('class') || el.getAttribute('id') || '';
+      if (!classes) return;
+      const newClassArr = classes.split(' ').map(i => `.${i}`);
+      if (!newClassArr.length) return;
+      caption.innerText = newClassArr.join('');
+      caption.setAttribute('class', 'tooltiptext')
+      caption.style.fontSize = '8px';
+      caption.style.textDecoration = 'none';
+      caption.setAttribute('data-el', 'data-caption')
+      if (!el.lastChild || !el.lastChild.getAttribute || !el.lastChild.getAttribute('data-el') || el.lastChild?.getAttribute('data-el') !== 'data-caption') {
+        el.appendChild(caption)
+      }
+      el.addEventListener('mouseleave', function (e) {
+        e.currentTarget.removeChild(caption)
+        e.currentTarget.style.border = 'none';
+        el.style.position = oldPosition
+      })
+    })
+  }
+</script>
+
+<script src="{{ 'script-injector.js' | asset_url }}" defer></script>
+
+
+{% schema %}
+{
+  "name": "TBYB Script",
+  "templates": ["product", "cart"],
+  "target": "body",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "devMode",
+      "label": "Development Mode",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Theme settings"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Primary color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "secondary_color",
+      "label": "Secondary color",
+      "default": "#d9d9d9"
+    },
+    {
+      "type": "select",
+      "id": "variant",
+      "label": "Variant",
+      "options": [
+        {
+          "value": "round",
+          "label": "Round"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "regular",
+          "label": "Regular"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "header",
+      "content": "TBYB Button settings"
+    },
+    {
+      "type": "select",
+      "id": "tbyb_btn_insert_position",
+      "label": "Button insert position",
+      "options": [
+        {
+          "value": "AFTER",
+          "label": "After"
+        },
+        {
+          "value": "BEFORE",
+          "label": "Before"
+        },
+        {
+          "value": "CONTAINER",
+          "label": "Container"
+        }
+      ],
+      "default": "AFTER"
+    },
+    {
+      "type": "paragraph",
+      "content": "If you selected 'Container' as your insert button position you need to provide a query selector to the container where you want TBYB button to be rendered"
+    },
+    {
+      "type": "text",
+      "id": "tbyb_btn_insert_container",
+      "label": "Provide a query selector",
+      "placeholder": ".product-form__buttons"
+    },
+    {
+      "type": "select",
+      "id": "tbyb_btn_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "outlined",
+          "label": "Outlined"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "text",
+      "id": "tbyb_btn_text",
+      "label": "Text on button",
+      "default": "Try Before You Buy"
+    }
+  ]
+}
+{% endschema %}

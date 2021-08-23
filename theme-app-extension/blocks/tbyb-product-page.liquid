@@ -1,0 +1,17 @@
+<button>TBYB</button>
+<p>{{ block.settings.product }}</p>
+{% schema %}
+{
+  "name": "TBYB Button",
+  "templates": ["product", "cart"],
+  "target": "section",
+  "settings": [
+    {
+      "id": "product",
+      "type": "product",
+      "label": "Product",
+      "autofill": true
+    }
+  ]
+}
+{% endschema %}
