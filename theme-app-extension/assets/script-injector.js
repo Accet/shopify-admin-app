@@ -1,3 +1,5 @@
+// import BlackCartShopify from "@blackcart/shopify";
+
 (function () {
   if (!window.tbyb) {
     let data = {};
@@ -25,8 +27,8 @@
       },
       implementation: {
         merchantDetails: {
-          id: "60",
-          name: "",
+          id: "1",
+          name: "Dawn",
         },
         autoOptIn: false,
         useCustomPricing: false,
@@ -46,39 +48,36 @@
             targetSelector: 'button[name="add"]',
             style: data["tbyb_btn_style"],
             insertPosition: data["tbyb_btn_insert_position"],
-            text: data["tbyb_btn_text"],
             container: data["tbyb_btn_insert_container"],
+            text: data["tbyb_btn_text"],
           },
         },
         learnMoreModal: {
           title: "TRY AT HOME BEFORE YOU BUY",
-          learnMoreLinkUrl: "http://www.luvostore.com.au/pages/about-blackcart",
+          learnMoreLinkUrl: "https://blackcart.com",
           learnMoreLinkText: "Learn More",
           className: "blackcart_luvo_modal",
           tryBeforeYouBuyText: "Try Before You Buy",
           features: [
             {
               type: 0,
-              title: "Pick a product",
-              caption:
-                "Add up to ${maxAmount} in unique items to your Try Before You Buy cart to try on at home for free.",
+              title: data["tbyb_lmm_shop_title"],
+              caption: data["tbyb_lmm_shop_caption"],
             },
             {
               type: 1,
-              title: "Don't pay for items today, just try!",
-              caption:
-                "Make your living room a fitting room. Try at home within {tryDays} day{s:tryDays} of delivery with just a refundable deposit of ${deposit}.",
+              title: data["tbyb_lmm_try_title"],
+              caption: data["tbyb_lmm_try_caption"],
             },
             {
               type: 2,
-              title: "If you love it, keep it!",
-              caption:
-                "If you love it, keep it. Your deposit goes towards items you keep",
+              title: data["tbyb_lmm_keep_title"],
+              caption: data["tbyb_lmm_keep_caption"],
             },
             {
               type: 3,
-              title: "Need to make a return?",
-              caption: "Shipping is prepaid with {carrier}",
+              title: data["tbyb_lmm_return_title"],
+              caption: data["tbyb_lmm_return_caption"],
             },
           ],
         },
@@ -108,36 +107,10 @@
             insertPosition: "BEFORE",
             targetSelector: ".medium-down--one-whole",
           },
-          hiddenElements: [],
-        },
-        minicart: {
-          targetSelector: ".cart_content",
-          lineItem: {
-            targetSelector: ".cart_content li.mini-cart__item",
-            linePrice: { targetSelector: "strong.price" },
-            tbybTag: {
-              className: "bc-lineitem-learnmore testid-learn-more",
-              insertPosition: "CONTAINER",
-              targetSelector:
-                ".cart_content li.mini-cart__item .mini-cart__item--content",
-              container:
-                ".cart_content li.mini-cart__item .mini-cart__item--content",
-              size: "small",
-              style: "outlined",
-            },
-            quantityControlsSelector: ".product-quantity-box ",
-          },
-          payNow: {
-            targetSelector: "li.cart_subtotal",
-            text: "span:not(.right, .money)",
-            price: "span.right .money",
-          },
-          warningBanner: {
-            className: "bc-mini-cart-warning testid-warning-banner",
-            insertPosition: "AFTER",
-            targetSelector:
-              "header.search-enabled--true .cart_items.js-cart_items",
-          },
+          hiddenElements: [
+            ".cart_savings",
+            ".blackcart__cartPage-lineItem .price_total",
+          ],
         },
       },
     });

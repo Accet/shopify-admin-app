@@ -35,7 +35,15 @@
     tbyb_btn_insert_position: "{{ block.settings.tbyb_btn_insert_position }}",
     tbyb_btn_insert_container: "{{ block.settings.tbyb_btn_insert_container }}",
     tbyb_btn_style: "{{ block.settings.tbyb_btn_style }}",
-    tbyb_btn_text: "{{ block.settings.tbyb_btn_text }}" || "Try Before You Buy"
+    tbyb_btn_text: "{{ block.settings.tbyb_btn_text }}" || "Try Before You Buy",
+    tbyb_lmm_shop_title: "{{ block.settings.tbyb_lmm_shop_title }}",
+    tbyb_lmm_shop_caption: "{{ block.settings.tbyb_lmm_shop_caption }}",
+    tbyb_lmm_try_caption: "{{ block.settings.tbyb_lmm_try_caption }}",
+    tbyb_lmm_try_title: "{{ block.settings.tbyb_lmm_try_title }}",
+    tbyb_lmm_keep_title: "{{ block.settings.tbyb_lmm_keep_title }}",
+    tbyb_lmm_keep_caption: "{{ block.settings.tbyb_lmm_keep_caption }}",
+    tbyb_lmm_return_title: "{{ block.settings.tbyb_lmm_return_title }}",
+    tbyb_lmm_return_caption: "{{ block.settings.tbyb_lmm_return_caption }}",
   }))
   if ("{{ block.settings.devMode }}" === 'true') {
     document.addEventListener('mouseover', function (event) {
@@ -58,6 +66,9 @@
       if (!el.lastChild || !el.lastChild.getAttribute || !el.lastChild.getAttribute('data-el') || el.lastChild?.getAttribute('data-el') !== 'data-caption') {
         el.appendChild(caption)
       }
+      el.addEventListener('click', function (e) {
+        e.preventDefault && e.preventDefault()
+      })
       el.addEventListener('mouseleave', function (e) {
         e.currentTarget.removeChild(caption)
         e.currentTarget.style.border = 'none';
@@ -67,8 +78,16 @@
   }
 </script>
 
-<script src="{{ 'script-injector.js' | asset_url }}" defer></script>
+<script type="module" src="{{ 'script-injector.js' | asset_url }}" defer></script>
 
+<script>
+
+  setTimeout(() => {
+    if ("{{ block.settings.showModal }}" === 'true' && window.tbyb) {
+      window.tbyb.viewManager.components.learnMoreModal.showModal({focus: () => {}})
+    }
+  }, 300)
+</script>
 
 {% schema %}
 {
@@ -82,6 +101,10 @@
       "label": "Development Mode",
       "default": false
     },
+{
+"type": "paragraph",
+"content": "-------------------------"
+},
     {
       "type": "header",
       "content": "Theme settings"
@@ -104,20 +127,24 @@
       "label": "Variant",
       "options": [
         {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
           "value": "round",
           "label": "Round"
         },
         {
           "value": "square",
           "label": "Square"
-        },
-        {
-          "value": "regular",
-          "label": "Regular"
         }
       ],
       "default": "regular"
     },
+{
+"type": "paragraph",
+"content": "-------------------------"
+},
     {
       "type": "header",
       "content": "TBYB Button settings"
@@ -158,12 +185,12 @@
       "label": "Button style",
       "options": [
         {
-          "value": "outlined",
-          "label": "Outlined"
-        },
-        {
           "value": "solid",
           "label": "Solid"
+        },
+        {
+          "value": "outlined",
+          "label": "Outlined"
         }
       ],
       "default": "solid"
@@ -173,7 +200,65 @@
       "id": "tbyb_btn_text",
       "label": "Text on button",
       "default": "Try Before You Buy"
-    }
+    },
+    {
+      "type": "header",
+      "content": "Modal settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "showModal",
+      "label": "Show Modal",
+      "default": false
+    },
+    {
+    "type": "text",
+    "id": "tbyb_lmm_shop_title",
+    "label": "Title for Shop section",
+    "default": "Pick a product"
+    },
+{
+"type": "textarea",
+"id": "tbyb_lmm_shop_caption",
+"label": "Caption for Shop section",
+"default": "Add up to ${maxAmount} in unique items to your Try Before You Buy cart to try on at home for free."
+},
+{
+"type": "text",
+"id": "tbyb_lmm_try_title",
+"label": "Title for Try section",
+"default": "Don't pay for items today, just try!"
+},
+{
+"type": "textarea",
+"id": "tbyb_lmm_try_caption",
+"label": "Caption for Try section",
+"default": "Make your living room a fitting room. Try at home within {tryDays} day{s:tryDays} of delivery with just a refundable deposit of ${deposit}."
+},
+{
+"type": "text",
+"id": "tbyb_lmm_keep_title",
+"label": "Title for Keep section",
+"default": "If you love it, keep it!"
+},
+{
+"type": "textarea",
+"id": "tbyb_lmm_keep_caption",
+"label": "Caption for Keep section",
+"default": "If you love it, keep it. Your deposit goes towards items you keep"
+},
+{
+"type": "text",
+"id": "tbyb_lmm_return_title",
+"label": "Title for Return section",
+"default": "Pick a product"
+},
+{
+"type": "textarea",
+"id": "tbyb_lmm_return_caption",
+"label": "Need to make a return?",
+"default": "Shipping is prepaid"
+}
   ]
 }
 {% endschema %}
