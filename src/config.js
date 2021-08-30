@@ -1,21 +1,26 @@
-// import BlackCartShopify from "@blackcart/shopify";
+export class Config {
+  static instance;
+  _config;
 
-(function () {
-  if (!window.tbyb) {
-    let data = {};
-    try {
-      const storage = JSON.parse(localStorage.getItem(`tbyb`));
-      if (storage) {
-        data = storage;
-      }
-    } catch (e) {
-      console.error(
-        "Error is occurred while retrieving data from storage: ",
-        e
-      );
-    }
-    // localStorage.setItem("tbyb", JSON.stringify({}));
-    window.tbyb = new BlackCartShopify({
+  constructor(config) {
+    this.primaryColor = config.primary_color;
+    this.secondaryColor = config.secondary_color;
+    this.tag_color = config.tag_color;
+    this.variant = config.variant;
+    this.tbyb_btn_insert_position = config.tbyb_btn_insert_position;
+    this.tbyb_btn_insert_container = config.tbyb_btn_insert_container;
+    this.tbyb_btn_style = config.tbyb_btn_style;
+    this.tbyb_btn_text = config.tbyb_btn_text || "Try Before You Buy";
+    this.tbyb_lmm_shop_title = config.tbyb_lmm_shop_title;
+    this.tbyb_lmm_shop_caption = config.tbyb_lmm_shop_caption;
+    this.tbyb_lmm_try_caption = config.tbyb_lmm_try_caption;
+    this.tbyb_lmm_try_title = config.tbyb_lmm_try_title;
+    this.tbyb_lmm_keep_title = config.tbyb_lmm_keep_title;
+    this.tbyb_lmm_keep_caption = config.tbyb_lmm_keep_caption;
+    this.tbyb_lmm_return_title = config.tbyb_lmm_return_title;
+    this.tbyb_lmm_return_caption = config.tbyb_lmm_return_caption;
+
+    this._config = {
       rules: {
         minAmount: 10000,
         maxAmount: 100000,
@@ -38,18 +43,18 @@
       elements: {
         theme: {
           brandColors: {
-            primary: data["primaryColor"],
-            secondary: data["secondaryColor"],
+            primary: this.primaryColor,
+            secondary: this.secondaryColor,
           },
-          variant: data["variant"],
+          variant: this.variant,
         },
         productDetailPage: {
           tbybBtn: {
             targetSelector: 'button[name="add"]',
-            style: data["tbyb_btn_style"],
-            insertPosition: data["tbyb_btn_insert_position"],
-            container: data["tbyb_btn_insert_container"],
-            text: data["tbyb_btn_text"],
+            style: this.tbyb_btn_style,
+            insertPosition: this.tbyb_btn_insert_position,
+            container: this.tbyb_btn_insert_container,
+            text: this.tbyb_btn_text,
           },
         },
         learnMoreModal: {
@@ -61,23 +66,23 @@
           features: [
             {
               type: 0,
-              title: data["tbyb_lmm_shop_title"],
-              caption: data["tbyb_lmm_shop_caption"],
+              title: this.tbyb_lmm_shop_title,
+              caption: this.tbyb_lmm_shop_caption,
             },
             {
               type: 1,
-              title: data["tbyb_lmm_try_title"],
-              caption: data["tbyb_lmm_try_caption"],
+              title: this.tbyb_lmm_try_title,
+              caption: this.tbyb_lmm_try_caption,
             },
             {
               type: 2,
-              title: data["tbyb_lmm_keep_title"],
-              caption: data["tbyb_lmm_keep_caption"],
+              title: this.tbyb_lmm_keep_title,
+              caption: this.tbyb_lmm_keep_caption,
             },
             {
               type: 3,
-              title: data["tbyb_lmm_return_title"],
-              caption: data["tbyb_lmm_return_caption"],
+              title: this.tbyb_lmm_return_title,
+              caption: this.tbyb_lmm_return_caption,
             },
           ],
         },
@@ -91,6 +96,7 @@
               targetSelector: ".cart-item__name",
               style: "outlined",
               size: "regular",
+              color: this.tag_color,
             },
             lineTotal: {
               targetSelector: ".cart-item__totals span.price",
@@ -111,8 +117,23 @@
             ".cart_savings",
             ".blackcart__cartPage-lineItem .price_total",
           ],
+          checkoutBtn: {
+            targetSelector: "test some",
+            insertPosition: "AFTER",
+          },
         },
       },
-    });
+    };
   }
-})();
+
+  static getInstance = (config) => {
+    if (!this.instance) {
+      this.instance = new Config(config);
+    }
+    return this.instance;
+  };
+
+  get config() {
+    return this._config;
+  }
+}

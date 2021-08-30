@@ -1,51 +1,74 @@
-<script src="https://storage.googleapis.com/origin-static.blackcart.co/js/blackcart-shopify-0.1.js" defer></script>
+<script id="tbyb-lib" src="https://storage.googleapis.com/blackcart-storefront/dev/blackcart-shopify-dev.js"
+        async></script>
 
-<style type="text/css">
-  .tooltiptext {
-    width: 120px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
-    top: 125%;
-    left: 50%;
-    margin-left: -60px;
-    transition: opacity 0.3s;
-  }
+<script id="tbyb-injector" type="text/javascript" src="{{ 'script-injector.bundle.js' | asset_url }}" async></script>
 
-  .tooltiptext::after {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent transparent #555 transparent;
-  }
-</style>
 <script type="text/javascript">
-  localStorage.setItem('tbyb', JSON.stringify({
-    primaryColor: "{{ block.settings.primary_color }}",
-    secondaryColor: "{{ block.settings.secondary_color }}",
-    variant: "{{ block.settings.variant }}",
-    tbyb_btn_insert_position: "{{ block.settings.tbyb_btn_insert_position }}",
-    tbyb_btn_insert_container: "{{ block.settings.tbyb_btn_insert_container }}",
-    tbyb_btn_style: "{{ block.settings.tbyb_btn_style }}",
-    tbyb_btn_text: "{{ block.settings.tbyb_btn_text }}" || "Try Before You Buy",
-    tbyb_lmm_shop_title: "{{ block.settings.tbyb_lmm_shop_title }}",
-    tbyb_lmm_shop_caption: "{{ block.settings.tbyb_lmm_shop_caption }}",
-    tbyb_lmm_try_caption: "{{ block.settings.tbyb_lmm_try_caption }}",
-    tbyb_lmm_try_title: "{{ block.settings.tbyb_lmm_try_title }}",
-    tbyb_lmm_keep_title: "{{ block.settings.tbyb_lmm_keep_title }}",
-    tbyb_lmm_keep_caption: "{{ block.settings.tbyb_lmm_keep_caption }}",
-    tbyb_lmm_return_title: "{{ block.settings.tbyb_lmm_return_title }}",
-    tbyb_lmm_return_caption: "{{ block.settings.tbyb_lmm_return_caption }}",
-  }))
-  if ("{{ block.settings.devMode }}" === 'true') {
+  const lib = document.getElementById('tbyb-lib')
+  const libResolved = new Promise(((resolve, reject) => {
+    if (!lib) {
+      reject('No script tag found')
+    }
+    lib.onload = () => {
+      resolve(true)
+    }
+    lib.onerror = (e) => {
+      reject(e)
+    }
+  }));
+  const injector = document.getElementById('tbyb-injector')
+  const injectorResolved = new Promise(((resolve, reject) => {
+    if (injector) {
+      injector.onload = () => {
+        resolve(true)
+      }
+      injector.onerror = (e) => {
+        reject(e)
+      }
+    }
+  }));
+
+  Promise.all([libResolved, injectorResolved]).then(() => {
+    const params = {
+      primary_color: "{{ block.settings.primary_color }}",
+      secondary_color: "{{ block.settings.secondary_color }}",
+      variant: "{{ block.settings.variant }}",
+      tbyb_btn_insert_position: "{{ block.settings.tbyb_btn_insert_position }}",
+      tbyb_btn_insert_container: "{{ block.settings.tbyb_btn_insert_container }}",
+      tbyb_btn_style: "{{ block.settings.tbyb_btn_style }}",
+      tbyb_btn_text: "{{ block.settings.tbyb_btn_text }}" || "Try Before You Buy",
+      tbyb_lmm_shop_title: "{{ block.settings.tbyb_lmm_shop_title }}",
+      tbyb_lmm_shop_caption: "{{ block.settings.tbyb_lmm_shop_caption }}",
+      tbyb_lmm_try_caption: "{{ block.settings.tbyb_lmm_try_caption }}",
+      tbyb_lmm_try_title: "{{ block.settings.tbyb_lmm_try_title }}",
+      tbyb_lmm_keep_title: "{{ block.settings.tbyb_lmm_keep_title }}",
+      tbyb_lmm_keep_caption: "{{ block.settings.tbyb_lmm_keep_caption }}",
+      tbyb_lmm_return_title: "{{ block.settings.tbyb_lmm_return_title }}",
+      tbyb_lmm_return_caption: "{{ block.settings.tbyb_lmm_return_caption }}",
+    }
+    if ("{{ block.settings.is_custom }}" === 'true') {
+      params.tag_color = "{{ block.settings.tag_color }}";
+    }
+    const config = window.TBYB.Config.getInstance(params).config
+    window.TBYB.init(config)
+    if (window.tbyb?.onInit) {
+      return window.tbyb.onInit
+    } else {
+      return Promise.reject('BlackCart instance not found')
+    }
+  }).catch((e) => {
+    console.error('Loader error: ', e);
+  }).then((bc) => {
+    if (Shopify.designMode && "{{ block.settings.showModal }}" === 'true') {
+      bc.viewManager.components.learnMoreModal.showModal({
+        focus: () => {
+        }
+      })
+    }
+  })
+
+
+  if (Shopify.designMode && "{{ block.settings.devMode }}" === 'true') {
     document.addEventListener('mouseover', function (event) {
       let x = event.clientX;
       let y = event.clientY;
@@ -78,145 +101,128 @@
   }
 </script>
 
-<script type="module" src="{{ 'script-injector.js' | asset_url }}" defer></script>
-
-<script>
-
-  setTimeout(() => {
-    if ("{{ block.settings.showModal }}" === 'true' && window.tbyb) {
-      window.tbyb.viewManager.components.learnMoreModal.showModal({focus: () => {}})
-    }
-  }, 300)
-</script>
+{{ 'tbyb-styles.css' | asset_url | stylesheet_tag }}
 
 {% schema %}
 {
-  "name": "TBYB Script",
-  "templates": ["product", "cart"],
-  "target": "body",
-  "settings": [
-    {
-      "type": "checkbox",
-      "id": "devMode",
-      "label": "Development Mode",
-      "default": false
-    },
+"name": "TBYB Script",
+"templates": ["product", "cart"],
+"target": "body",
+"settings": [
+{
+"type": "checkbox",
+"id": "devMode",
+"label": "Development Mode",
+"default": false
+},
+{
+"type": "header",
+"content": "Theme settings"
+},
+{
+"type": "color",
+"id": "primary_color",
+"label": "Primary color",
+"default": "#333333"
+},
+{
+"type": "color",
+"id": "secondary_color",
+"label": "Secondary color",
+"default": "#d9d9d9"
+},
+{
+"type": "select",
+"id": "variant",
+"label": "Variant",
+"options": [
+{
+"value": "regular",
+"label": "Regular"
+},
+{
+"value": "round",
+"label": "Round"
+},
+{
+"value": "square",
+"label": "Square"
+}
+],
+"default": "regular"
+},
+{
+"type": "header",
+"content": "TBYB Button settings"
+},
+{
+"type": "select",
+"id": "tbyb_btn_insert_position",
+"label": "Button insert position",
+"options": [
+{
+"value": "AFTER",
+"label": "After"
+},
+{
+"value": "BEFORE",
+"label": "Before"
+},
+{
+"value": "CONTAINER",
+"label": "Container"
+}
+],
+"default": "AFTER"
+},
 {
 "type": "paragraph",
-"content": "-------------------------"
+"content": "If you selected 'Container' as your insert button position you need to provide a query selector to the container where you want TBYB button to be rendered"
 },
-    {
-      "type": "header",
-      "content": "Theme settings"
-    },
-    {
-      "type": "color",
-      "id": "primary_color",
-      "label": "Primary color",
-      "default": "#333333"
-    },
-    {
-      "type": "color",
-      "id": "secondary_color",
-      "label": "Secondary color",
-      "default": "#d9d9d9"
-    },
-    {
-      "type": "select",
-      "id": "variant",
-      "label": "Variant",
-      "options": [
-        {
-          "value": "regular",
-          "label": "Regular"
-        },
-        {
-          "value": "round",
-          "label": "Round"
-        },
-        {
-          "value": "square",
-          "label": "Square"
-        }
-      ],
-      "default": "regular"
-    },
 {
-"type": "paragraph",
-"content": "-------------------------"
+"type": "text",
+"id": "tbyb_btn_insert_container",
+"label": "Provide a query selector",
+"placeholder": ".product-form__buttons"
 },
-    {
-      "type": "header",
-      "content": "TBYB Button settings"
-    },
-    {
-      "type": "select",
-      "id": "tbyb_btn_insert_position",
-      "label": "Button insert position",
-      "options": [
-        {
-          "value": "AFTER",
-          "label": "After"
-        },
-        {
-          "value": "BEFORE",
-          "label": "Before"
-        },
-        {
-          "value": "CONTAINER",
-          "label": "Container"
-        }
-      ],
-      "default": "AFTER"
-    },
-    {
-      "type": "paragraph",
-      "content": "If you selected 'Container' as your insert button position you need to provide a query selector to the container where you want TBYB button to be rendered"
-    },
-    {
-      "type": "text",
-      "id": "tbyb_btn_insert_container",
-      "label": "Provide a query selector",
-      "placeholder": ".product-form__buttons"
-    },
-    {
-      "type": "select",
-      "id": "tbyb_btn_style",
-      "label": "Button style",
-      "options": [
-        {
-          "value": "solid",
-          "label": "Solid"
-        },
-        {
-          "value": "outlined",
-          "label": "Outlined"
-        }
-      ],
-      "default": "solid"
-    },
-    {
-      "type": "text",
-      "id": "tbyb_btn_text",
-      "label": "Text on button",
-      "default": "Try Before You Buy"
-    },
-    {
-      "type": "header",
-      "content": "Modal settings"
-    },
-    {
-      "type": "checkbox",
-      "id": "showModal",
-      "label": "Show Modal",
-      "default": false
-    },
-    {
-    "type": "text",
-    "id": "tbyb_lmm_shop_title",
-    "label": "Title for Shop section",
-    "default": "Pick a product"
-    },
+{
+"type": "select",
+"id": "tbyb_btn_style",
+"label": "Button style",
+"options": [
+{
+"value": "solid",
+"label": "Solid"
+},
+{
+"value": "outlined",
+"label": "Outlined"
+}
+],
+"default": "solid"
+},
+{
+"type": "text",
+"id": "tbyb_btn_text",
+"label": "Text on button",
+"default": "Try Before You Buy"
+},
+{
+"type": "header",
+"content": "Modal settings"
+},
+{
+"type": "checkbox",
+"id": "showModal",
+"label": "Show Modal",
+"default": false
+},
+{
+"type": "text",
+"id": "tbyb_lmm_shop_title",
+"label": "Title for Shop section",
+"default": "Pick a product"
+},
 {
 "type": "textarea",
 "id": "tbyb_lmm_shop_caption",
@@ -258,7 +264,25 @@
 "id": "tbyb_lmm_return_caption",
 "label": "Need to make a return?",
 "default": "Shipping is prepaid"
+},
+{
+"type": "checkbox",
+"id": "is_custom",
+"label": "Use Custom Tag Color",
+"default": false
+},
+{
+"type": "color",
+"id": "tag_color",
+"label": "Tag color Cart Page",
+"default": "#333333"
+},
+{
+"type": "color",
+"id": "tag_color_minicart",
+"label": "Tag color Mini Cart",
+"default": "#333333"
 }
-  ]
+]
 }
 {% endschema %}
